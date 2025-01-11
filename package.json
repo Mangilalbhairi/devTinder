@@ -1,0 +1,20 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node run app.js",
+    "dev":"nodemon run app.js"
+  },
+  "keywords": [
+    "dev",
+    "tinder"
+  ],
+  "author": "mangilal",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
