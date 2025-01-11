@@ -1,49 +1,32 @@
 const express = require("express")
 const app = express()
 
-//routes
-app.use("/",(req, res, next) => {
-    res.send("Hello from server")
+
+//Multiple route handler
+app.use("/user",[ (req, res, next) => {
+    console.log("handle the route user 1")
+    // res.send("Response from user 1")
     next()
-});
-app.use("/",(req, res, next) => {
-    res.send("Hello from server2")
+},
+(req, res, next) => {
+    console.log("handle the route user 2")
     next()
-});
+    // res.send("Response form user 2")
 
+}],
+(req, res,next) => {
+    console.log("handle the route user 3")
+    // res.send("Response from user 3")
+    next()
 
-app.use("/test",(req,res) => {
-    res.send("Hello from test route")
-})
+},
+(req, res, next) => {
+    console.log("handle the route user 4");
+    // next()
+    res.send("Response from user 4")
+    next()
+    res.send("huuuuuu")
 
-app.use("/test/3", (req, res) => {
-    res.send("hello from test 2 case")
-})
-
-app.use("/user", (req, res) => {
-    res.send("hello from hello route")
-})
-
-//handle different http request method like Get POST or Delete Patch
-
-app.get("/user", (req,res) => {
-    res.send({
-      name:"Mangilal",
-      userId : "9588"
-
-    })
-})
-
-app.post("/user/:name/:id/signup",(req, res) => {
-    res.send({
-        meassage:"User signup sucessfully!",
-        name : req.params.name,
-        userId : req.params.id
-    })
-})
-
-app.delete("/user", (req, res) => {
-    res.send("User deleted sucessfully")
 })
 
 //listining port
