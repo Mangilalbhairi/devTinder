@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "start": "node run app.js",
-    "dev":"nodemon run app.js"
+    "dev": "nodemon run app.js"
   },
   "keywords": [
     "dev",
@@ -15,6 +15,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "mongoose": "^8.9.4"
   }
 }
