@@ -1,33 +1,34 @@
 const express = require("express")
 const app = express()
+const {userAuth, isAdmin} = require("./middleware/auth")
 
+//Middleware and request handler method
+app.use(express.json())//parse body
 
-//Multiple route handler
-app.use("/user",[ (req, res, next) => {
-    console.log("handle the route user 1")
-    // res.send("Response from user 1")
-    next()
-},
-(req, res, next) => {
-    console.log("handle the route user 2")
-    next()
-    // res.send("Response form user 2")
-
-}],
-(req, res,next) => {
-    console.log("handle the route user 3")
-    // res.send("Response from user 3")
-    next()
-
-},
-(req, res, next) => {
-    console.log("handle the route user 4");
-    // next()
-    res.send("Response from user 4")
-    next()
-    res.send("huuuuuu")
-
+app.post("/user/login/", (req, res)=>{
+   const {user,password} = req.body;
+   res.send({
+    message:"User Sucessfully login!",
+    userName:`Hello ${user}`
+   
+   })
 })
+app.use("/admin",isAdmin)
+app.use("/user",userAuth)//middleware for user authentigation
+
+app.get("/admin/dashboard", (req, res) => {
+    res.send("Dashboard Page")
+})
+
+app.get("/user/alluser",(req, res)=> {
+    res.send("all user")
+})
+app.delete("/user/deleteuser",(req, res) =>{
+    res.send("User Delete Sucessfully")
+})
+
+
+
 
 //listining port
 app.listen(7777, (req, res) => {
