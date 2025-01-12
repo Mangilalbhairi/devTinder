@@ -17,11 +17,21 @@ app.use("/admin",isAdmin)
 app.use("/user",userAuth)//middleware for user authentigation
 
 app.get("/admin/dashboard", (req, res) => {
+    
+    throw new Error("Some thing went wrong")//generate the error
     res.send("Dashboard Page")
+    
+  
 })
-
+//handle the error with try and catch 
 app.get("/user/alluser",(req, res)=> {
-    res.send("all user")
+    try{
+        throw new Error("user not found")
+        res.send("all user")
+    }
+    catch(err){
+        res.status(404).send(err.message)
+    }
 })
 app.delete("/user/deleteuser",(req, res) =>{
     res.send("User Delete Sucessfully")
