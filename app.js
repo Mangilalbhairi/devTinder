@@ -32,24 +32,28 @@ app.get("/user",async (req, res) => {
   }
 })
 //update user
-app.patch("/update/:id", async (req, res) => {
+app.patch("/update/:userId", async (req, res) => {
   try{
-    const id = req.params.id;
-    const updateData = req.body;
+    const id = req.params.userId;
+    const userData = req.body;
+   
 
-    AllowedUpdated = ['about','gender','age','photoUrl','skill']
+    AllowedUpdated = ['about','gender','age','photoUrl','skill','email']
     
-    const isAllowed = Object.keys(updateData).every((k) => AllowedUpdated.includes(k))
-    if(!isAllowed)
+    const isUpdateAllowed = Object.keys(userData).every((k) => AllowedUpdated.includes(k))
+    if(!isUpdateAllowed)
       res.send("Sorry You are try to update unathuraized field!")
     else{
-      const updatedUser = await User.findByIdAndUpdate(id, updateData)
+      const updatedUser = await User.findByIdAndUpdate(id, userData,{
+        new:true,
+        runValidators: true
+      })
       res.send(updatedUser)
     }
    
   }
   catch(err) {
-    res.send(`Something went wrong ${err.message}`)
+    res.send(`Something went wrong ${err.message} `)
   }
 })
 //Delete the user
