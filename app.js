@@ -3,13 +3,14 @@ const app = express();
 const { connectDB } = require("./config/database");
 const User = require("./model/user");
 app.use(express.json());
+
+
 //handle user signup
 app.post("/signup", async (req, res)=> {
   try{
     const userObj = req.body;
     const user = new User(userObj);
     const result = await user.save()
-    console.log("User sucessfullly created")
     res.status(201).send(result)
 
   }
@@ -35,7 +36,6 @@ app.patch("/update", async (req, res) => {
   try{
     const id = req.body.id;
     const updateData = req.body.data
-    console.log(id,  updateData)
     const updatedUser = await User.findByIdAndUpdate(id, {
       "lastName" : updateData
     })
@@ -46,7 +46,7 @@ app.patch("/update", async (req, res) => {
   }
 })
 //Delete the user
-app.use("/delete", async (req, res) => {
+app.delete("/delete", async (req, res) => {
   try{
     const userId = req.body.id;
     const deletedUser = await User.findByIdAndDelete(userId)
