@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser")
 const jwt = require("jsonwebtoken")
 const app = express();
 const { connectDB } = require("./config/database");
-const User = require("./model/user");
+const {User,getJWT }= require("./model/user");
 const {validateSignupUser} = require("./utils/validate")
 const {auth} = require("./middleware/auth")
 app.use(express.json());
@@ -22,7 +22,7 @@ app.post("/signup", async (req, res)=> {
 
     const {password,firstName,lastName,email,gender} = req.body;
     const hashPassword =await bcrypt.hash(password,10)
-    console.log("hash  password",hashPassword)
+   
     const user = new User({
       firstName,
       lastName,
@@ -42,7 +42,7 @@ app.post("/signup", async (req, res)=> {
 //login user
 app.post("/login", async(req, res) => {
   try{
-    const  {email,password} = req.body;
+    const {email,password} = req.body;
 
     if(!(email&&password))
       throw new Error("Please Enter Credentials")
@@ -52,13 +52,12 @@ app.post("/login", async(req, res) => {
     if(!user)//check user available or not
       throw new Error("User Not found")
 
-    const isPasswordValid = await bcrypt.compare(password, user.password)//matching password
+    
+    const isPasswordValid = await user.validatePassword(password)
     
     if(isPasswordValid){
-      const token = await jwt.sign({_id:user._id}, "XXX$SECURE&")
-      
+      token = await user.getJWT()
       res.cookie("token",token)
-      
       res.send("Login Sucessfully")
     }
 
