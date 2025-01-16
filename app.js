@@ -1,10 +1,14 @@
 const express = require("express");
 const bcrypt =  require("bcrypt")
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken")
 const app = express();
 const { connectDB } = require("./config/database");
 const User = require("./model/user");
 const {validateSignupUser} = require("./utils/validate")
+const {auth} = require("./middleware/auth")
 app.use(express.json());
+app.use(cookieParser())
 
 
 
@@ -50,8 +54,13 @@ app.post("/login", async(req, res) => {
 
     const isPasswordValid = await bcrypt.compare(password, user.password)//matching password
     
-    if(isPasswordValid)
+    if(isPasswordValid){
+      const token = await jwt.sign({_id:user._id}, "XXX$SECURE&")
+      
+      res.cookie("token",token)
+      
       res.send("Login Sucessfully")
+    }
 
     else{
       res.send("Invalid Credentials")
@@ -63,54 +72,20 @@ app.post("/login", async(req, res) => {
   }
 })
 
-//get user
-app.get("/user",async (req, res) => {
-  try{
-    const  userDetail = req.body;
-    //const user = await User.find(userDetail)// fetch all user which are full fill criteria 
-    const user = await User.findOne(userDetail)//fetch only one user
+//get profile
+app.get("/profile", auth, (req, res) => {
+  try {
+    const user = req.user;
+    if(!user)
+      throw new Error("User not found")
     res.send(user)
   }
   catch(err){
-    res.send(`Something went wrong ${err.message}`)
+    res.send(`Error : ${err.message}`)
   }
-})
-//update user
-app.patch("/update/:userId", async (req, res) => {
-  try{
-    const id = req.params.userId;
-    const userData = req.body;
-   
 
-    AllowedUpdated = ['about','gender','age','photoUrl','skill','email']
-    
-    const isUpdateAllowed = Object.keys(userData).every((k) => AllowedUpdated.includes(k))
-    if(!isUpdateAllowed)
-      res.send("Sorry You are try to update unathuraized field!")
-    else{
-      const updatedUser = await User.findByIdAndUpdate(id, userData,{
-        new:true,
-        runValidators: true
-      })
-      res.send(updatedUser)
-    }
-   
-  }
-  catch(err) {
-    res.send(`Something went wrong ${err.message} `)
-  }
 })
-//Delete the user
-app.delete("/delete", async (req, res) => {
-  try{
-    const userId = req.body.id;
-    const deletedUser = await User.findByIdAndDelete(userId)
-    res.send(deletedUser)
-  }
-  catch(err){
-    res.send(`Something went wrong ${deletedUser}`)
-  }
-})
+
 
 connectDB()
   .then(() => {

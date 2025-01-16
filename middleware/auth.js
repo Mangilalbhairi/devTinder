@@ -1,31 +1,29 @@
-const token = "xyz";
+const jwt = require("jsonwebtoken");
+const User = require("../model/user")
 
-//auth middleware 
+const auth = async(req ,res, next) => {
+    try{
+        const token = req.cookies.token;
 
-const userAuth = (req, res, next) => {
-    console.log("verifying user token")
+        if(!token)
+            throw new Error("Login Required")
 
-    const userToken = "xyz";
-    const isUserAuthorized = userToken === token;
-    if(!isUserAuthorized)
-        res.send("Please Enter correct credential")
-    else{
+        const decodeToken = await jwt.verify(token, "XXX$SECURE&")
+
+        const userId = decodeToken._id;
+        const user = await User.findById(userId)
+
+        if(!user)
+            throw new Error("user not found")
+        req.user = user;
         next()
     }
-}
-
-const isAdmin = (req, res, next) => {
-    console.log("verifying user token")
-    const adminToken = "xyz";
-    const isUserAuthorized = adminToken === token;
-    if(!isUserAuthorized)
-        res.send("You have not admin access")
-    else{
-        next()
+    catch(err){
+        res.send(`Error : ${err.message}`)
     }
-}
 
+
+}
 module.exports = {
-    userAuth,
-    isAdmin
+    auth
 }
