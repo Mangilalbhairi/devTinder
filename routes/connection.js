@@ -4,6 +4,7 @@ const {auth} = require("../middleware/auth")
 const User = require("../model/user")
 const connectionRequest = require("../model/connectionRequest")
 
+
 connectionRouter.post("/request/send/:status/:toUserId", auth , async (req, res) => {
     try{
         
@@ -64,6 +65,50 @@ connectionRouter.post("/request/send/:status/:toUserId", auth , async (req, res)
         })
     }
 
+})
+
+//Accepted connection request api
+connectionRouter.post("/request/review/:status/:reqestId", auth, async(req, res) => {
+    try{
+        const {status, reqestId} = req.params;
+        const logedInUser = req.user;
+
+        const allowStatus = ["accept", "reject"]
+        //check status allow or not
+        if(!allowStatus.includes(status))
+            return res.status(404).json({
+            success:false,
+            message:"Invalid Status not allowed!"
+        })
+
+        //check valid user request
+        const connectionRequests = await connectionRequest.findOne({
+           _id:reqestId,
+            toUserId:logedInUser._id,
+            status:"interasted"
+            
+        })
+        if(!connectionRequests)
+            return res.status(400).json({
+            sucess:false,
+            message:"Connection Request not found"
+        })
+        connectionRequests.status = "accept";
+        const result = await connectionRequests.save()
+
+        res.status(200).json({
+            sucess:true,
+            message:"Request Sucessfully Accepted!"
+        })
+
+
+    }
+    catch(err){
+        res.status(400).json({
+            sucess:false,
+            message:err.message
+        })
+    }
 })
 
 
