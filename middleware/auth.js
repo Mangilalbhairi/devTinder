@@ -5,8 +5,12 @@ const auth = async(req ,res, next) => {
     try{
         const token = req.cookies.token;
 
-        if(!token)
-            throw new Error("Login Required")
+        if(!token){
+           return res.status(401).json({
+            sucess:false,
+            message:"Please Login"
+            
+})}
 
         const decodeToken = await jwt.verify(token, "XXX$SECURE&")
 

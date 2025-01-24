@@ -52,7 +52,11 @@ authRouter.post("/login", async (req, res) => {
         if(isPasswordValid){
           token = await user.getJWT()
           res.cookie("token",token)
-          res.send("Login Sucessfully")
+          res.status(200).json({
+            sucess:true,
+            message:"Login sucessfully!",
+            user
+})
         }
     
         else{
@@ -61,7 +65,7 @@ authRouter.post("/login", async (req, res) => {
     
       }
       catch(err){
-        res.send(`Error: ${err.message}`)
+        return res.status(400).send(`Error: ${err.message}`)
       }
     
 })
