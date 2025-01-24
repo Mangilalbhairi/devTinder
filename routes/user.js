@@ -75,6 +75,11 @@ userRouter.get("/request/connection", auth, async (req, res) => {
 
 userRouter.get("/request/feed", auth, async (req, res) => {
   try {
+    //Pagination variable
+    const page = parseInt(req.query.page) || 1;
+    let limit =  parseInt(req.query.limit) || 10;
+    limit = limit > 50 ? 50 : 10;
+    const skip = (page-1) * limit;
     const SAFE_DATA = [
       "firstName",
       "lastName",
@@ -108,7 +113,7 @@ userRouter.get("/request/feed", auth, async (req, res) => {
         { _id: { $nin: Array.from(hideUserFromFeed) } },
         { _id: { $ne: logedInUser._id } },
       ],
-    }).select(SAFE_DATA);
+    }).select(SAFE_DATA).skip(skip).limit(limit);
 
     res.status(200).json({
       sucess: true,
