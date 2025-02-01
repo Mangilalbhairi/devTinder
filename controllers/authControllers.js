@@ -20,10 +20,13 @@ const handleSignup = async (req, res) => {
       gender,
       password: hashPassword,
     });
-    const result = await user.save();
+    user = await user.save();
+  
 
     token = await result.getJWT(); // get jwt token
-    res.cookie("token", token);
+   
+    user.password = ""
+    
     res.status(201).json({
       sucess: true,
       message: "account created sucessfully!",
@@ -81,7 +84,7 @@ const handleLogin = async (req, res) => {
 };
 
 const handleLogout = async (req, res) => {
-    res.cookie.clear()
+    res.clearCookie()
     res.status(200).json({
       sucess: true,
       message: "User logout sucessfully",
